@@ -1,1 +1,0 @@
-/usr/bin/clang++ -g CMakeFiles/budget_tracker.dir/src/Transaction.cpp.o CMakeFiles/budget_tracker.dir/src/Category.cpp.o CMakeFiles/budget_tracker.dir/src/Budget.cpp.o CMakeFiles/budget_tracker.dir/src/DataManager.cpp.o CMakeFiles/budget_tracker.dir/src/main.cpp.o -o budget_tracker 

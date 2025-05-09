@@ -114,19 +114,40 @@ namespace BudgetTrackerUI.ViewModels
         public double Amount
         {
             get => _amount;
-            set => SetField(ref _amount, value);
+            set
+            {
+                if (SetField(ref _amount, value))
+                {
+
+                    OnPropertyChanged(nameof(CanSave));
+                }
+            }
         }
 
         public string Description
         {
             get => _description;
-            set => SetField(ref _description, value);
+            set
+            {
+                if (SetField(ref _description, value))
+                {
+
+                    OnPropertyChanged(nameof(CanSave));
+                }
+            }
         }
 
         public Category? SelectedCategory
         {
             get => _selectedCategory;
-            set => SetField(ref _selectedCategory, value);
+            set
+            {
+                if (SetField(ref _selectedCategory, value))
+                {
+
+                    OnPropertyChanged(nameof(CanSave));
+                }
+            }
         }
 
         public bool IsIncome
@@ -141,7 +162,19 @@ namespace BudgetTrackerUI.ViewModels
             set => SetField(ref _categories, value);
         }
 
-        public bool CanSave => Amount > 0 && !string.IsNullOrWhiteSpace(Description) && SelectedCategory != null;
+        public bool CanSave
+        {
+            get
+            {
+                bool hasAmount = Amount > 0;
+                bool hasDescription = !string.IsNullOrWhiteSpace(Description);
+                bool hasCategory = SelectedCategory != null;
+
+                Console.WriteLine($"CanSave: Amount > 0: {hasAmount}, Has Description: {hasDescription}, Has Category: {hasCategory}");
+
+                return hasAmount && hasDescription && hasCategory;
+            }
+        }
 
         public Transaction GetTransaction()
         {

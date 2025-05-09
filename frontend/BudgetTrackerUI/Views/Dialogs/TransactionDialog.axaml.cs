@@ -32,6 +32,8 @@ namespace BudgetTrackerUI.Views.Dialogs
             try
             {
                 Console.WriteLine("Save button clicked in TransactionDialog");
+                Console.WriteLine($"Transaction details - Description: {_viewModel.Description}, Amount: {_viewModel.Amount}, CanSave: {_viewModel.CanSave}");
+
                 Result = _viewModel.GetTransaction();
                 Console.WriteLine($"Created transaction: {Result.Description}, Amount: {Result.Amount}");
                 Close(true);

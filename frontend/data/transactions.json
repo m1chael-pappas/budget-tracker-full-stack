@@ -70,5 +70,14 @@
     "CategoryId": 2,
     "IsIncome": false,
     "CategoryName": "Transportation"
+  },
+  {
+    "Id": 9,
+    "Date": "2025-05-09",
+    "Amount": 12.03,
+    "Description": "test",
+    "CategoryId": 1,
+    "IsIncome": false,
+    "CategoryName": "Food"
   }
 ]

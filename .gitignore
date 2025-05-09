@@ -1,5 +1,13 @@
 # .gitignore for C++ and C# Projects
-
+# C++ build directories
+/build/
+/out/
+/cmake-build-*/
+/CMakeFiles/
+/CMakeCache.txt
+/CMakeScripts/
+/compile_commands.json
+/CTestTestfile.cmake
 # C++ specific
 # Prerequisites
 *.d

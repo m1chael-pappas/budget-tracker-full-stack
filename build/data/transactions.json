@@ -1,0 +1,26 @@
+[
+    {
+        "amount": 45.67,
+        "categoryId": 1,
+        "date": "2025-05-08",
+        "description": "Weekly groceries",
+        "id": 1,
+        "isIncome": false
+    },
+    {
+        "amount": 3000.0,
+        "categoryId": 0,
+        "date": "2025-05-01",
+        "description": "Monthly salary",
+        "id": 2,
+        "isIncome": true
+    },
+    {
+        "amount": 1200.0,
+        "categoryId": 2,
+        "date": "2025-05-05",
+        "description": "Rent payment",
+        "id": 3,
+        "isIncome": false
+    }
+]

@@ -133,25 +133,41 @@ namespace BudgetTrackerUI.Services
             return SaveToFile(TransactionsFilePath, transactions);
         }
 
-        public int AddTransaction(Transaction transaction)
+        public void AddTransaction(Transaction transaction)
         {
+            // Ensure ID is assigned
             var transactions = GetAllTransactions();
+            int nextId = transactions.Count > 0 ? transactions.Max(t => t.Id) + 1 : 1;
+            transaction.Id = nextId;
 
-            // Assign a new ID if needed
-            if (transaction.Id <= 0)
+            // Format date as yyyy-MM-dd if not already
+            if (!transaction.Date.Contains("-"))
             {
-                transaction.Id = transactions.Count > 0 ? transactions.Max(t => t.Id) + 1 : 1;
+                // Try to parse and reformat
+                try
+                {
+                    var date = DateTime.Parse(transaction.Date);
+                    transaction.Date = date.ToString("yyyy-MM-dd");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error formatting date: {ex.Message}");
+                }
             }
 
-            // Check if transaction with this ID already exists
-            if (transactions.Any(t => t.Id == transaction.Id))
+            // Ensure CategoryName is set
+            if (string.IsNullOrEmpty(transaction.CategoryName) && transaction.CategoryId > 0)
             {
-                return -1; // Transaction ID already exists
+                var category = GetCategoryById(transaction.CategoryId);
+                if (category != null)
+                {
+                    transaction.CategoryName = category.Name;
+                }
             }
 
+            // Add to list and save
             transactions.Add(transaction);
             SaveTransactions(transactions);
-            return transaction.Id;
         }
 
         public bool UpdateTransaction(Transaction transaction)

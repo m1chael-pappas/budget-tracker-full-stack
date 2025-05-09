@@ -10,17 +10,16 @@ namespace BudgetTrackerUI.Views.Dialogs
 {
     public partial class TransactionDialog : Window
     {
-        public Transaction? Result { get; private set; }
+        private TransactionDialogViewModel _viewModel;
 
-        public TransactionDialog()
-        {
-            InitializeComponent();
-        }
+        public Transaction? Result { get; private set; }
 
         public TransactionDialog(Transaction? transaction, bool isEdit)
         {
             InitializeComponent();
-            DataContext = new TransactionDialogViewModel(transaction, isEdit);
+
+            _viewModel = new TransactionDialogViewModel(transaction, isEdit);
+            DataContext = _viewModel;
         }
 
         private void InitializeComponent()
@@ -28,17 +27,24 @@ namespace BudgetTrackerUI.Views.Dialogs
             AvaloniaXamlLoader.Load(this);
         }
 
-        private void OnSaveClicked(object sender, RoutedEventArgs e)
+        private void OnSaveClicked(object? sender, RoutedEventArgs e)
         {
-            if (DataContext is TransactionDialogViewModel viewModel)
+            try
             {
-                Result = viewModel.GetTransaction();
+                Console.WriteLine("Save button clicked in TransactionDialog");
+                Result = _viewModel.GetTransaction();
+                Console.WriteLine($"Created transaction: {Result.Description}, Amount: {Result.Amount}");
                 Close(true);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in OnSaveClicked: {ex.Message}");
             }
         }
 
-        private void OnCancelClicked(object sender, RoutedEventArgs e)
+        private void OnCancelClicked(object? sender, RoutedEventArgs e)
         {
+            Console.WriteLine("Cancel button clicked in TransactionDialog");
             Close(false);
         }
     }

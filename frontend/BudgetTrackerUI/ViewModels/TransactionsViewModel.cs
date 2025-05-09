@@ -209,72 +209,99 @@ namespace BudgetTrackerUI.ViewModels
 
         public async Task AddTransactionAsync()
         {
-            if (_hostWindow == null) return;
-
-            var dialog = new TransactionDialog(null, false);
+            Console.WriteLine($"AddTransactionAsync called, hostWindow: {(_hostWindow != null ? "exists" : "null")}");
+            if (_hostWindow == null)
+            {
+                Console.WriteLine("Error: Host window is null, cannot show dialog");
+                return;
+            }
 
             try
             {
+                var dialog = new TransactionDialog(null, false);
+                Console.WriteLine("Created TransactionDialog");
+
                 var result = await dialog.ShowDialog<bool?>(_hostWindow);
+                Console.WriteLine($"Dialog closed with result: {result}");
+
                 if (result == true && dialog.Result != null)
                 {
                     var transaction = dialog.Result;
+                    Console.WriteLine($"Adding transaction: {transaction.Description}, Amount: {transaction.Amount}");
                     _dataService.AddTransaction(transaction);
                     LoadTransactions();
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in AddTransactionAsync: {ex.Message}");
+                Console.WriteLine($"Exception in AddTransactionAsync: {ex.Message}\n{ex.StackTrace}");
             }
         }
 
         public async Task EditTransactionAsync()
         {
-            if (_hostWindow == null || _selectedTransaction == null) return;
-
-            var dialog = new TransactionDialog(_selectedTransaction, true);
+            Console.WriteLine($"EditTransactionAsync called, hostWindow: {(_hostWindow != null ? "exists" : "null")}, selectedTransaction: {(_selectedTransaction != null ? "exists" : "null")}");
+            if (_hostWindow == null || _selectedTransaction == null)
+            {
+                Console.WriteLine("Error: Host window or selected transaction is null");
+                return;
+            }
 
             try
             {
+                var dialog = new TransactionDialog(_selectedTransaction, true);
+                Console.WriteLine("Created TransactionDialog for editing");
+
                 var result = await dialog.ShowDialog<bool?>(_hostWindow);
+                Console.WriteLine($"Dialog closed with result: {result}");
+
                 if (result == true && dialog.Result != null)
                 {
                     var transaction = dialog.Result;
+                    Console.WriteLine($"Updating transaction: {transaction.Description}, Amount: {transaction.Amount}");
                     _dataService.UpdateTransaction(transaction);
                     LoadTransactions();
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in EditTransactionAsync: {ex.Message}");
+                Console.WriteLine($"Exception in EditTransactionAsync: {ex.Message}\n{ex.StackTrace}");
             }
         }
 
         public async Task DeleteTransactionAsync()
         {
-            if (_hostWindow == null || _selectedTransaction == null) return;
-
-            var messageBox = new MessageDialog
+            Console.WriteLine($"DeleteTransactionAsync called, hostWindow: {(_hostWindow != null ? "exists" : "null")}, selectedTransaction: {(_selectedTransaction != null ? "exists" : "null")}");
+            if (_hostWindow == null || _selectedTransaction == null)
             {
-                Title = "Confirm Delete",
-                Message = $"Are you sure you want to delete the transaction '{_selectedTransaction.Description}'?",
-                PrimaryButtonText = "Delete",
-                SecondaryButtonText = "Cancel"
-            };
+                Console.WriteLine("Error: Host window or selected transaction is null");
+                return;
+            }
 
             try
             {
+                var messageBox = new MessageDialog
+                {
+                    Title = "Confirm Delete",
+                    Message = $"Are you sure you want to delete the transaction '{_selectedTransaction.Description}'?",
+                    PrimaryButtonText = "Delete",
+                    SecondaryButtonText = "Cancel"
+                };
+                Console.WriteLine("Created MessageDialog for delete confirmation");
+
                 var result = await messageBox.ShowDialog<bool?>(_hostWindow);
+                Console.WriteLine($"Dialog closed with result: {result}");
+
                 if (result == true)
                 {
+                    Console.WriteLine($"Deleting transaction ID: {_selectedTransaction.Id}");
                     _dataService.DeleteTransaction(_selectedTransaction.Id);
                     LoadTransactions();
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in DeleteTransactionAsync: {ex.Message}");
+                Console.WriteLine($"Exception in DeleteTransactionAsync: {ex.Message}\n{ex.StackTrace}");
             }
         }
     }

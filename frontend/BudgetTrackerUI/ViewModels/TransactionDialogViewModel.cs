@@ -1,24 +1,44 @@
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using Avalonia.Threading;
 using BudgetTrackerUI.Models;
 using BudgetTrackerUI.Services;
-using System.Linq;
-using Avalonia.Threading;
 
 namespace BudgetTrackerUI.ViewModels
 {
-    public class TransactionDialogViewModel : ReactiveViewModelBase
+    public class TransactionDialogViewModel : INotifyPropertyChanged
     {
         private readonly DataService _dataService;
         private readonly bool _isEdit;
         private readonly int _transactionId;
 
-        private DateTime _transactionDate;
+        private DateTimeOffset _transactionDate;
         private double _amount;
         private string _description = string.Empty;
         private Category? _selectedCategory;
         private bool _isIncome;
         private ObservableCollection<Category> _categories = new();
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            });
+        }
+
+        protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+        {
+            if (Equals(field, value)) return false;
+            field = value;
+            OnPropertyChanged(propertyName);
+            return true;
+        }
 
         public TransactionDialogViewModel(Transaction? transaction, bool isEdit)
         {
@@ -31,7 +51,17 @@ namespace BudgetTrackerUI.ViewModels
             if (transaction != null)
             {
                 _transactionId = transaction.Id;
-                _transactionDate = DateTime.Parse(transaction.Date);
+                try
+                {
+                    // Convert string date to DateTimeOffset
+                    _transactionDate = DateTimeOffset.Parse(transaction.Date);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error parsing date {transaction.Date}: {ex.Message}");
+                    _transactionDate = DateTimeOffset.Now;
+                }
+
                 _amount = transaction.Amount;
                 _description = transaction.Description;
                 _isIncome = transaction.IsIncome;
@@ -40,7 +70,7 @@ namespace BudgetTrackerUI.ViewModels
             else
             {
                 _transactionId = 0;
-                _transactionDate = DateTime.Now;
+                _transactionDate = DateTimeOffset.Now;
                 _amount = 0;
                 _description = string.Empty;
                 _isIncome = false;
@@ -75,7 +105,7 @@ namespace BudgetTrackerUI.ViewModels
 
         public string WindowTitle => _isEdit ? "Edit Transaction" : "Add New Transaction";
 
-        public DateTime TransactionDate
+        public DateTimeOffset TransactionDate
         {
             get => _transactionDate;
             set => SetField(ref _transactionDate, value);
@@ -118,7 +148,7 @@ namespace BudgetTrackerUI.ViewModels
             return new Transaction
             {
                 Id = _transactionId,
-                Date = _transactionDate.ToString("yyyy-MM-dd"),
+                Date = _transactionDate.DateTime.ToString("yyyy-MM-dd"),
                 Amount = _amount,
                 Description = _description,
                 CategoryId = _selectedCategory?.Id ?? 0,

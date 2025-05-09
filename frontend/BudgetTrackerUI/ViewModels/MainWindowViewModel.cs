@@ -117,7 +117,14 @@ namespace BudgetTrackerUI.ViewModels
                     _monthYears.Add(monthYear);
                 }
 
-                _selectedMonthYear = _monthYears.Count > 0 ? _monthYears[0] : DateTime.Now.ToString("yyyy-MM");
+                // Make sure we have a default selected
+                if (_monthYears.Count > 0)
+                {
+                    _selectedMonthYear = _monthYears[0]; // Current month
+                    Console.WriteLine($"Selected initial month: {_selectedMonthYear}");
+                    // Refresh dashboard with the selected month
+                    RefreshDashboard();
+                }
             });
         }
 

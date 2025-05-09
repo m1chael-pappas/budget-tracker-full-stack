@@ -37,7 +37,7 @@
                       ItemsSource="{Binding FilterCategories}"
                       SelectedItem="{Binding SelectedFilterCategory}" 
                       DisplayMemberBinding="{Binding Name}"/>
-            <Button Grid.Column="4" Content="Clear Filters" Command="{Binding ClearFiltersCommand}"/>
+            <Button Grid.Column="4" Content="Clear Filters" Click="OnClearFiltersClick"/>
         </Grid>
         <!-- Transactions DataGrid -->
         <DataGrid Grid.Row="2" ItemsSource="{Binding FilteredTransactions}" 
@@ -56,10 +56,10 @@
         </DataGrid>
         <!-- Action Buttons -->
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0" Spacing="10">
-            <Button Content="Add" Width="80" Command="{Binding AddTransactionCommand}"/>
-            <Button Content="Edit" Width="80" Command="{Binding EditTransactionCommand}" 
+            <Button Content="Add" Width="80" Click="OnAddClick"/>
+            <Button Content="Edit" Width="80" Click="OnEditClick" 
                     IsEnabled="{Binding !!SelectedTransaction}"/>
-            <Button Content="Delete" Width="80" Command="{Binding DeleteTransactionCommand}" 
+            <Button Content="Delete" Width="80" Click="OnDeleteClick" 
                     IsEnabled="{Binding !!SelectedTransaction}"/>
         </StackPanel>
     </Grid>

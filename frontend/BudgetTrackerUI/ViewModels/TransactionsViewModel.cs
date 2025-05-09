@@ -1,18 +1,19 @@
+
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
-using System.Reactive;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using BudgetTrackerUI.Models;
 using BudgetTrackerUI.Services;
 using BudgetTrackerUI.Views.Dialogs;
-using ReactiveUI;
 
 namespace BudgetTrackerUI.ViewModels
 {
-    public class TransactionsViewModel : ReactiveViewModelBase
+    public class TransactionsViewModel : INotifyPropertyChanged
     {
         private readonly DataService _dataService;
         private ObservableCollection<Transaction> _allTransactions = new();
@@ -24,16 +25,28 @@ namespace BudgetTrackerUI.ViewModels
         private Transaction? _selectedTransaction;
         private Window? _hostWindow;
 
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            });
+        }
+
+        protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+        {
+            if (Equals(field, value)) return false;
+            field = value;
+            OnPropertyChanged(propertyName);
+            return true;
+        }
+
         public TransactionsViewModel(Window? hostWindow = null)
         {
             _hostWindow = hostWindow;
             _dataService = new DataService("../data");
-
-            // Initialize commands using our thread-safe wrappers
-            AddTransactionCommand = CreateAsyncCommand(AddTransactionAsync);
-            EditTransactionCommand = CreateAsyncCommand(EditTransactionAsync);
-            DeleteTransactionCommand = CreateAsyncCommand(DeleteTransactionAsync);
-            ClearFiltersCommand = CreateCommand(ClearFilters);
 
             // Load data
             InitializeMonthSelector();
@@ -88,11 +101,6 @@ namespace BudgetTrackerUI.ViewModels
             get => _selectedTransaction;
             set => SetField(ref _selectedTransaction, value);
         }
-
-        public ReactiveCommand<Unit, Unit> AddTransactionCommand { get; }
-        public ReactiveCommand<Unit, Unit> EditTransactionCommand { get; }
-        public ReactiveCommand<Unit, Unit> DeleteTransactionCommand { get; }
-        public ReactiveCommand<Unit, Unit> ClearFiltersCommand { get; }
 
         public void SetHostWindow(Window? window)
         {
@@ -190,7 +198,7 @@ namespace BudgetTrackerUI.ViewModels
             });
         }
 
-        private void ClearFilters()
+        public void ClearFilters()
         {
             if (_monthYears.Count > 0)
                 SelectedMonthYear = _monthYears[0]; // "All"
@@ -199,37 +207,51 @@ namespace BudgetTrackerUI.ViewModels
                 SelectedFilterCategory = _filterCategories[0]; // "All Categories"
         }
 
-        private async Task AddTransactionAsync()
+        public async Task AddTransactionAsync()
         {
             if (_hostWindow == null) return;
 
             var dialog = new TransactionDialog(null, false);
 
-            var result = await dialog.ShowDialog<bool?>(_hostWindow);
-            if (result == true && dialog.Result != null)
+            try
             {
-                var transaction = dialog.Result;
-                _dataService.AddTransaction(transaction);
-                LoadTransactions();
+                var result = await dialog.ShowDialog<bool?>(_hostWindow);
+                if (result == true && dialog.Result != null)
+                {
+                    var transaction = dialog.Result;
+                    _dataService.AddTransaction(transaction);
+                    LoadTransactions();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in AddTransactionAsync: {ex.Message}");
             }
         }
 
-        private async Task EditTransactionAsync()
+        public async Task EditTransactionAsync()
         {
             if (_hostWindow == null || _selectedTransaction == null) return;
 
             var dialog = new TransactionDialog(_selectedTransaction, true);
 
-            var result = await dialog.ShowDialog<bool?>(_hostWindow);
-            if (result == true && dialog.Result != null)
+            try
             {
-                var transaction = dialog.Result;
-                _dataService.UpdateTransaction(transaction);
-                LoadTransactions();
+                var result = await dialog.ShowDialog<bool?>(_hostWindow);
+                if (result == true && dialog.Result != null)
+                {
+                    var transaction = dialog.Result;
+                    _dataService.UpdateTransaction(transaction);
+                    LoadTransactions();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in EditTransactionAsync: {ex.Message}");
             }
         }
 
-        private async Task DeleteTransactionAsync()
+        public async Task DeleteTransactionAsync()
         {
             if (_hostWindow == null || _selectedTransaction == null) return;
 
@@ -241,11 +263,18 @@ namespace BudgetTrackerUI.ViewModels
                 SecondaryButtonText = "Cancel"
             };
 
-            var result = await messageBox.ShowDialog<bool?>(_hostWindow);
-            if (result == true)
+            try
             {
-                _dataService.DeleteTransaction(_selectedTransaction.Id);
-                LoadTransactions();
+                var result = await messageBox.ShowDialog<bool?>(_hostWindow);
+                if (result == true)
+                {
+                    _dataService.DeleteTransaction(_selectedTransaction.Id);
+                    LoadTransactions();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in DeleteTransactionAsync: {ex.Message}");
             }
         }
     }

@@ -1,11 +1,12 @@
+<!-- MainWindow.axaml -->
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:BudgetTrackerUI.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="using:BudgetTrackerUI"
-        xmlns:converters="using:BudgetTrackerUI.Converters"
         xmlns:views="using:BudgetTrackerUI.Views"
+        xmlns:converters="using:BudgetTrackerUI.Converters"
         mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
         x:Class="BudgetTrackerUI.Views.MainWindow"
         Title="Budget Tracker"
@@ -22,28 +23,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <!-- Menu -->
-        <Menu Grid.Row="0">
-            <MenuItem Header="File">
-                <MenuItem Header="Exit"/>
-            </MenuItem>
-            <MenuItem Header="Transactions">
-                <MenuItem Header="Add New"/>
-                <MenuItem Header="View All"/>
-            </MenuItem>
-            <MenuItem Header="Categories">
-                <MenuItem Header="Manage"/>
-            </MenuItem>
-            <MenuItem Header="Budgets">
-                <MenuItem Header="Set Budgets"/>
-            </MenuItem>
-            <MenuItem Header="Reports">
-                <MenuItem Header="Monthly Summary"/>
-                <MenuItem Header="Category Breakdown"/>
-            </MenuItem>
-        </Menu>
-        <!-- Tab Control for Main Content -->
-        <TabControl Grid.Row="1" Name="MainTabControl">
-            <!-- Dashboard Tab -->
+        <TabControl Grid.Row="1">
             <TabItem Header="Dashboard">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -57,8 +37,7 @@
                         <ComboBox Name="MonthYearComboBox" Width="150" 
                                   ItemsSource="{Binding MonthYears}"
                                   SelectedItem="{Binding SelectedMonthYear}"/>
-                        <Button Content="Refresh" Margin="10,0,0,0" 
-                                Command="{Binding RefreshDashboardCommand}"/>
+                        <Button Content="Refresh" Margin="10,0,0,0" Click="OnRefreshClick"/>
                     </StackPanel>
                     <!-- Summary Cards -->
                     <Grid Grid.Row="1" Margin="10">

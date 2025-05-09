@@ -1,15 +1,15 @@
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
-using System.Reactive;
+using System.Runtime.CompilerServices;
 using Avalonia.Threading;
 using BudgetTrackerUI.Models;
 using BudgetTrackerUI.Services;
-using ReactiveUI;
 
 namespace BudgetTrackerUI.ViewModels
 {
-    public class MainWindowViewModel : ReactiveViewModelBase
+    public class MainWindowViewModel : INotifyPropertyChanged
     {
         private readonly DataService _dataService;
         private string _selectedMonthYear = string.Empty;
@@ -19,6 +19,24 @@ namespace BudgetTrackerUI.ViewModels
         private ObservableCollection<Transaction> _recentTransactions = new();
         private ObservableCollection<string> _monthYears = new();
         private TransactionsViewModel _transactionsViewModel;
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            });
+        }
+
+        protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+        {
+            if (Equals(field, value)) return false;
+            field = value;
+            OnPropertyChanged(propertyName);
+            return true;
+        }
 
         public MainWindowViewModel()
         {
@@ -30,9 +48,6 @@ namespace BudgetTrackerUI.ViewModels
 
             // Initialize the TransactionsViewModel
             _transactionsViewModel = new TransactionsViewModel();
-
-            // Initialize command
-            RefreshDashboardCommand = CreateCommand(RefreshDashboard);
 
             InitializeMonthSelector();
             RefreshDashboard();
@@ -86,8 +101,6 @@ namespace BudgetTrackerUI.ViewModels
             set => SetField(ref _recentTransactions, value);
         }
 
-        public ReactiveCommand<Unit, Unit> RefreshDashboardCommand { get; }
-
         private void InitializeMonthSelector()
         {
             Dispatcher.UIThread.Post(() =>
@@ -112,26 +125,43 @@ namespace BudgetTrackerUI.ViewModels
         {
             if (string.IsNullOrEmpty(_selectedMonthYear)) return;
 
-            // Update summary values
-            TotalIncome = _dataService.GetTotalIncome(_selectedMonthYear);
-            TotalExpense = _dataService.GetTotalExpense(_selectedMonthYear);
-            Balance = TotalIncome - TotalExpense;
-
-            // Update recent transactions list
-            var transactions = _dataService.GetTransactionsByMonth(_selectedMonthYear)
-                .OrderByDescending(t => t.Date)
-                .Take(10)
-                .ToList();
-
-            Dispatcher.UIThread.Post(() =>
+            try
             {
-                _recentTransactions.Clear();
+                // Update summary values
+                var income = _dataService.GetTotalIncome(_selectedMonthYear);
+                var expense = _dataService.GetTotalExpense(_selectedMonthYear);
 
-                foreach (var transaction in transactions)
+                Dispatcher.UIThread.Post(() =>
                 {
-                    _recentTransactions.Add(transaction);
-                }
-            });
+                    TotalIncome = income;
+                    TotalExpense = expense;
+                    Balance = income - expense;
+
+                    Console.WriteLine($"Updated dashboard - Income: {TotalIncome}, Expense: {TotalExpense}, Balance: {Balance}");
+                });
+
+                // Update recent transactions list
+                var transactions = _dataService.GetTransactionsByMonth(_selectedMonthYear)
+                    .OrderByDescending(t => t.Date)
+                    .Take(10)
+                    .ToList();
+
+                Dispatcher.UIThread.Post(() =>
+                {
+                    _recentTransactions.Clear();
+
+                    foreach (var transaction in transactions)
+                    {
+                        _recentTransactions.Add(transaction);
+                    }
+
+                    Console.WriteLine($"Loaded {_recentTransactions.Count} recent transactions");
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error refreshing dashboard: {ex.Message}");
+            }
         }
     }
 }

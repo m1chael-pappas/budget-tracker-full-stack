@@ -1,6 +1,6 @@
-
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using BudgetTrackerUI.ViewModels;
 
 namespace BudgetTrackerUI.Views
 {
@@ -9,6 +9,11 @@ namespace BudgetTrackerUI.Views
         public MainWindow()
         {
             InitializeComponent();
+
+            if (DataContext is MainWindowViewModel vm)
+            {
+                vm.TransactionsViewModel.SetHostWindow(this);
+            }
         }
 
         private void InitializeComponent()

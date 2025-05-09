@@ -1,41 +1,47 @@
-
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
-using Avalonia.Controls;
-using ReactiveUI;
+using Avalonia.Threading;
 using BudgetTrackerUI.Models;
 using BudgetTrackerUI.Services;
+using ReactiveUI;
 
 namespace BudgetTrackerUI.ViewModels
 {
-    public class MainWindowViewModel : ViewModelBase
+    public class MainWindowViewModel : ReactiveViewModelBase
     {
         private readonly DataService _dataService;
-        private string _selectedMonthYear = string.Empty;  // Initialize to avoid CS8618
+        private string _selectedMonthYear = string.Empty;
         private double _totalIncome;
         private double _totalExpense;
         private double _balance;
-        private ObservableCollection<Transaction> _recentTransactions;
-        private ObservableCollection<string> _monthYears;
-        private ReactiveCommand<Unit, Unit> _refreshDashboardCommand;
+        private ObservableCollection<Transaction> _recentTransactions = new();
+        private ObservableCollection<string> _monthYears = new();
+        private TransactionsViewModel _transactionsViewModel;
 
         public MainWindowViewModel()
         {
-            // Initialize data service - point to the same data directory used by C++ backend
+            // Initialize data service
             _dataService = new DataService("../data");
 
-            // Initialize properties
-            _monthYears = new ObservableCollection<string>();
-            _recentTransactions = new ObservableCollection<Transaction>();
+            // Create sample data if needed
+            _dataService.CreateSampleData();
+
+            // Initialize the TransactionsViewModel
+            _transactionsViewModel = new TransactionsViewModel();
 
             // Initialize command
-            _refreshDashboardCommand = ReactiveCommand.Create(() => RefreshDashboard());
+            RefreshDashboardCommand = CreateCommand(RefreshDashboard);
 
             InitializeMonthSelector();
             RefreshDashboard();
+        }
+
+        public TransactionsViewModel TransactionsViewModel
+        {
+            get => _transactionsViewModel;
+            set => SetField(ref _transactionsViewModel, value);
         }
 
         public ObservableCollection<string> MonthYears
@@ -80,25 +86,32 @@ namespace BudgetTrackerUI.ViewModels
             set => SetField(ref _recentTransactions, value);
         }
 
-        public ReactiveCommand<Unit, Unit> RefreshDashboardCommand => _refreshDashboardCommand;
+        public ReactiveCommand<Unit, Unit> RefreshDashboardCommand { get; }
 
         private void InitializeMonthSelector()
         {
-            var currentDate = DateTime.Now;
-
-            // Add current month and 11 previous months
-            for (int i = 0; i < 12; i++)
+            Dispatcher.UIThread.Post(() =>
             {
-                var date = currentDate.AddMonths(-i);
-                var monthYear = date.ToString("yyyy-MM");
-                _monthYears.Add(monthYear);
-            }
+                _monthYears.Clear();
 
-            _selectedMonthYear = _monthYears.FirstOrDefault() ?? DateTime.Now.ToString("yyyy-MM");
+                var currentDate = DateTime.Now;
+
+                // Add current month and 11 previous months
+                for (int i = 0; i < 12; i++)
+                {
+                    var date = currentDate.AddMonths(-i);
+                    var monthYear = date.ToString("yyyy-MM");
+                    _monthYears.Add(monthYear);
+                }
+
+                _selectedMonthYear = _monthYears.Count > 0 ? _monthYears[0] : DateTime.Now.ToString("yyyy-MM");
+            });
         }
 
         public void RefreshDashboard()
         {
+            if (string.IsNullOrEmpty(_selectedMonthYear)) return;
+
             // Update summary values
             TotalIncome = _dataService.GetTotalIncome(_selectedMonthYear);
             TotalExpense = _dataService.GetTotalExpense(_selectedMonthYear);
@@ -110,11 +123,15 @@ namespace BudgetTrackerUI.ViewModels
                 .Take(10)
                 .ToList();
 
-            RecentTransactions.Clear();
-            foreach (var transaction in transactions)
+            Dispatcher.UIThread.Post(() =>
             {
-                RecentTransactions.Add(transaction);
-            }
+                _recentTransactions.Clear();
+
+                foreach (var transaction in transactions)
+                {
+                    _recentTransactions.Add(transaction);
+                }
+            });
         }
     }
 }

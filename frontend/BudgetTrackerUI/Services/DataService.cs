@@ -1,4 +1,3 @@
-// BudgetTrackerUI/Services/DataService.cs
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -386,5 +385,125 @@ namespace BudgetTrackerUI.Services
         }
 
         #endregion
+
+
+        // Add this method to your DataService.cs
+        public void CreateSampleData()
+        {
+            // Check if we already have categories
+            var categories = GetAllCategories();
+            if (categories.Count == 0)
+            {
+                // Add sample categories
+                var sampleCategories = new List<Category>
+        {
+            new Category { Id = 1, Name = "Food", Description = "Groceries and dining out", Color = "#4CAF50" },
+            new Category { Id = 2, Name = "Transportation", Description = "Gas, public transit, etc.", Color = "#2196F3" },
+            new Category { Id = 3, Name = "Entertainment", Description = "Movies, games, etc.", Color = "#9C27B0" },
+            new Category { Id = 4, Name = "Utilities", Description = "Electricity, water, internet, etc.", Color = "#F44336" },
+            new Category { Id = 5, Name = "Salary", Description = "Income from employment", Color = "#FFC107" }
+        };
+
+                foreach (var category in sampleCategories)
+                {
+                    AddCategory(category);
+                }
+            }
+
+            // Check if we already have transactions
+            var transactions = GetAllTransactions();
+            if (transactions.Count == 0)
+            {
+                // Add sample transactions
+                var currentDate = DateTime.Now;
+                var currentMonthYear = currentDate.ToString("yyyy-MM");
+                var lastMonthDate = currentDate.AddMonths(-1);
+                var lastMonthYear = lastMonthDate.ToString("yyyy-MM");
+
+                var sampleTransactions = new List<Transaction>
+        {
+            // Current month transactions
+            new Transaction {
+                Id = 1,
+                Date = $"{currentMonthYear}-01",
+                Amount = 2000.00,
+                Description = "Monthly Salary",
+                CategoryId = 5,
+                IsIncome = true,
+                CategoryName = "Salary"
+            },
+            new Transaction {
+                Id = 2,
+                Date = $"{currentMonthYear}-05",
+                Amount = 85.75,
+                Description = "Grocery Shopping",
+                CategoryId = 1,
+                IsIncome = false,
+                CategoryName = "Food"
+            },
+            new Transaction {
+                Id = 3,
+                Date = $"{currentMonthYear}-08",
+                Amount = 45.00,
+                Description = "Gas",
+                CategoryId = 2,
+                IsIncome = false,
+                CategoryName = "Transportation"
+            },
+            new Transaction {
+                Id = 4,
+                Date = $"{currentMonthYear}-12",
+                Amount = 120.00,
+                Description = "Internet Bill",
+                CategoryId = 4,
+                IsIncome = false,
+                CategoryName = "Utilities"
+            },
+            new Transaction {
+                Id = 5,
+                Date = $"{currentMonthYear}-15",
+                Amount = 65.50,
+                Description = "Movie Night",
+                CategoryId = 3,
+                IsIncome = false,
+                CategoryName = "Entertainment"
+            },
+
+            // Last month transactions
+            new Transaction {
+                Id = 6,
+                Date = $"{lastMonthYear}-01",
+                Amount = 2000.00,
+                Description = "Monthly Salary",
+                CategoryId = 5,
+                IsIncome = true,
+                CategoryName = "Salary"
+            },
+            new Transaction {
+                Id = 7,
+                Date = $"{lastMonthYear}-10",
+                Amount = 95.20,
+                Description = "Grocery Shopping",
+                CategoryId = 1,
+                IsIncome = false,
+                CategoryName = "Food"
+            },
+            new Transaction {
+                Id = 8,
+                Date = $"{lastMonthYear}-20",
+                Amount = 50.00,
+                Description = "Gas",
+                CategoryId = 2,
+                IsIncome = false,
+                CategoryName = "Transportation"
+            }
+        };
+
+                foreach (var transaction in sampleTransactions)
+                {
+                    AddTransaction(transaction);
+                }
+            }
+        }
     }
 }

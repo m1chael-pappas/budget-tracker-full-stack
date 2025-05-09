@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="using:BudgetTrackerUI"
         xmlns:converters="using:BudgetTrackerUI.Converters"
+        xmlns:views="using:BudgetTrackerUI.Views"
         mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
         x:Class="BudgetTrackerUI.Views.MainWindow"
         Title="Budget Tracker"
@@ -107,7 +108,9 @@
                     </Grid>
                 </Grid>
             </TabItem>
-            <!-- Other tabs will be added later -->
+            <TabItem Header="Transactions">
+                <views:TransactionsView DataContext="{Binding TransactionsViewModel}"/>
+            </TabItem>
         </TabControl>
     </Grid>
 </Window>

@@ -1,0 +1,66 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:BudgetTrackerUI.ViewModels"
+             xmlns:converters="using:BudgetTrackerUI.Converters"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="BudgetTrackerUI.Views.TransactionsView"
+             x:DataType="vm:TransactionsViewModel">
+    <UserControl.Resources>
+        <converters:BoolToTypeConverter x:Key="BoolToTypeConverter"/>
+    </UserControl.Resources>
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <!-- Header -->
+        <TextBlock Grid.Row="0" Text="Transactions" FontSize="24" FontWeight="Bold" Margin="0,0,0,10"/>
+        <!-- Filters -->
+        <Grid Grid.Row="1" Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="Month:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+            <ComboBox Grid.Column="1" Width="150" Margin="0,0,20,0"
+                      ItemsSource="{Binding MonthYears}"
+                      SelectedItem="{Binding SelectedMonthYear}"/>
+            <TextBlock Grid.Column="2" Text="Category:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+            <ComboBox Grid.Column="3" Width="200"
+                      ItemsSource="{Binding FilterCategories}"
+                      SelectedItem="{Binding SelectedFilterCategory}" 
+                      DisplayMemberBinding="{Binding Name}"/>
+            <Button Grid.Column="4" Content="Clear Filters" Command="{Binding ClearFiltersCommand}"/>
+        </Grid>
+        <!-- Transactions DataGrid -->
+        <DataGrid Grid.Row="2" ItemsSource="{Binding FilteredTransactions}" 
+                  AutoGenerateColumns="False" IsReadOnly="True" 
+                  SelectedItem="{Binding SelectedTransaction}"
+                  SelectionMode="Single" 
+                  VerticalAlignment="Stretch"
+                  HorizontalAlignment="Stretch">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Date" Binding="{Binding Date}" Width="100"/>
+                <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>
+                <DataGridTextColumn Header="Category" Binding="{Binding CategoryName}" Width="150"/>
+                <DataGridTextColumn Header="Type" Binding="{Binding IsIncome, Converter={StaticResource BoolToTypeConverter}}" Width="100"/>
+                <DataGridTextColumn Header="Amount" Binding="{Binding Amount, StringFormat={}{0:C2}}" Width="120"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <!-- Action Buttons -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0" Spacing="10">
+            <Button Content="Add" Width="80" Command="{Binding AddTransactionCommand}"/>
+            <Button Content="Edit" Width="80" Command="{Binding EditTransactionCommand}" 
+                    IsEnabled="{Binding !!SelectedTransaction}"/>
+            <Button Content="Delete" Width="80" Command="{Binding DeleteTransactionCommand}" 
+                    IsEnabled="{Binding !!SelectedTransaction}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

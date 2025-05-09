@@ -1,0 +1,82 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:BudgetTrackerUI.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
+        x:Class="BudgetTrackerUI.Views.Dialogs.TransactionDialog"
+        Title="{Binding WindowTitle}"
+        Width="500" Height="450"
+        WindowStartupLocation="CenterOwner"
+        x:DataType="vm:TransactionDialogViewModel">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <!-- Header -->
+        <TextBlock Grid.Row="0" Text="{Binding WindowTitle}" 
+                   FontSize="20" FontWeight="Bold" Margin="0,0,0,20"/>
+        <!-- Form -->
+        <StackPanel Grid.Row="1" Spacing="15">
+            <!-- Date -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Date:" VerticalAlignment="Center"/>
+                <DatePicker Grid.Column="1" SelectedDate="{Binding TransactionDate}"/>
+            </Grid>
+            <!-- Amount -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Amount:" VerticalAlignment="Center"/>
+                <NumericUpDown Grid.Column="1" Value="{Binding Amount}" Minimum="0.01" Increment="0.01" FormatString="C2"/>
+            </Grid>
+            <!-- Description -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Description:" VerticalAlignment="Center"/>
+                <TextBox Grid.Column="1" Text="{Binding Description}" MaxLength="100"/>
+            </Grid>
+            <!-- Category -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Category:" VerticalAlignment="Center"/>
+                <ComboBox Grid.Column="1" 
+                          ItemsSource="{Binding Categories}" 
+                          SelectedItem="{Binding SelectedCategory}" 
+                          DisplayMemberBinding="{Binding Name}"
+                          HorizontalAlignment="Stretch"/>
+            </Grid>
+            <!-- Type -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Type:" VerticalAlignment="Center"/>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="20">
+                    <RadioButton Content="Income" IsChecked="{Binding IsIncome}" GroupName="TransactionType"/>
+                    <RadioButton Content="Expense" IsChecked="{Binding !IsIncome}" GroupName="TransactionType"/>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+        <!-- Buttons -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0" Spacing="10">
+            <Button Content="Cancel" Width="100" Click="OnCancelClicked"/>
+            <Button Content="Save" Width="100" Click="OnSaveClicked" IsEnabled="{Binding CanSave}"/>
+        </StackPanel>
+    </Grid>
+</Window>

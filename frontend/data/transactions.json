@@ -1,0 +1,74 @@
+[
+  {
+    "Id": 1,
+    "Date": "2025-05-01",
+    "Amount": 2000,
+    "Description": "Monthly Salary",
+    "CategoryId": 5,
+    "IsIncome": true,
+    "CategoryName": "Salary"
+  },
+  {
+    "Id": 2,
+    "Date": "2025-05-05",
+    "Amount": 85.75,
+    "Description": "Grocery Shopping",
+    "CategoryId": 1,
+    "IsIncome": false,
+    "CategoryName": "Food"
+  },
+  {
+    "Id": 3,
+    "Date": "2025-05-08",
+    "Amount": 45,
+    "Description": "Gas",
+    "CategoryId": 2,
+    "IsIncome": false,
+    "CategoryName": "Transportation"
+  },
+  {
+    "Id": 4,
+    "Date": "2025-05-12",
+    "Amount": 120,
+    "Description": "Internet Bill",
+    "CategoryId": 4,
+    "IsIncome": false,
+    "CategoryName": "Utilities"
+  },
+  {
+    "Id": 5,
+    "Date": "2025-05-15",
+    "Amount": 65.5,
+    "Description": "Movie Night",
+    "CategoryId": 3,
+    "IsIncome": false,
+    "CategoryName": "Entertainment"
+  },
+  {
+    "Id": 6,
+    "Date": "2025-04-01",
+    "Amount": 2000,
+    "Description": "Monthly Salary",
+    "CategoryId": 5,
+    "IsIncome": true,
+    "CategoryName": "Salary"
+  },
+  {
+    "Id": 7,
+    "Date": "2025-04-10",
+    "Amount": 95.2,
+    "Description": "Grocery Shopping",
+    "CategoryId": 1,
+    "IsIncome": false,
+    "CategoryName": "Food"
+  },
+  {
+    "Id": 8,
+    "Date": "2025-04-20",
+    "Amount": 50,
+    "Description": "Gas",
+    "CategoryId": 2,
+    "IsIncome": false,
+    "CategoryName": "Transportation"
+  }
+]

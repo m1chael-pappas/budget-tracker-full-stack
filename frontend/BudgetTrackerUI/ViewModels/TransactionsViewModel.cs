@@ -15,7 +15,7 @@ namespace BudgetTrackerUI.ViewModels
 {
     public class TransactionsViewModel : INotifyPropertyChanged
     {
-        private readonly DataService _dataService;
+        private readonly IDataService _dataService;
         private ObservableCollection<Transaction> _allTransactions = new();
         private ObservableCollection<Transaction> _filteredTransactions = new();
         private ObservableCollection<string> _monthYears = new();
@@ -43,10 +43,10 @@ namespace BudgetTrackerUI.ViewModels
             return true;
         }
 
-        public TransactionsViewModel(Window? hostWindow = null)
+        public TransactionsViewModel(IDataService dataService, Window? hostWindow = null)
         {
             _hostWindow = hostWindow;
-            _dataService = new DataService("../data");
+            _dataService = dataService;
 
             // Load data
             InitializeMonthSelector();

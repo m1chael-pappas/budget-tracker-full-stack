@@ -7,7 +7,7 @@ using BudgetTrackerUI.Models;
 
 namespace BudgetTrackerUI.Services
 {
-    public class DataService
+    public class DataService : IDataService
     {
         private string _dataPath;
         private JsonSerializerOptions _jsonOptions;

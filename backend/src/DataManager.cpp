@@ -116,15 +116,30 @@ bool DataManager::loadFromFile(const std::string &filePath, json &jsonData) cons
         if (!file.is_open())
         {
             // File might not exist yet, which is not an error
-            return false;
+            jsonData = json::array(); // Initialize as empty array
+            return true;
         }
 
+        // Check if file is empty
+        file.seekg(0, std::ios::end);
+        if (file.tellg() == 0)
+        {
+            // File is empty, return empty array
+            jsonData = json::array();
+            return true;
+        }
+
+        // Reset to start of file
+        file.seekg(0, std::ios::beg);
+
+        // Parse JSON
         file >> jsonData;
         return true;
     }
     catch (const std::exception &e)
     {
         std::cerr << "Error loading from file: " << e.what() << std::endl;
+        jsonData = json::array(); // Initialize as empty array in case of error
         return false;
     }
 }

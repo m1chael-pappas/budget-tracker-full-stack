@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -11,7 +12,8 @@ namespace BudgetTrackerUI.ViewModels
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
-        private readonly DataService _dataService;
+        private readonly IDataService _dataService;
+        private NativeDataService? _nativeDataService;
         private string _selectedMonthYear = string.Empty;
         private double _totalIncome;
         private double _totalExpense;
@@ -19,6 +21,7 @@ namespace BudgetTrackerUI.ViewModels
         private ObservableCollection<Transaction> _recentTransactions = new();
         private ObservableCollection<string> _monthYears = new();
         private TransactionsViewModel _transactionsViewModel;
+
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -40,18 +43,54 @@ namespace BudgetTrackerUI.ViewModels
 
         public MainWindowViewModel()
         {
-            // Initialize data service
-            _dataService = new DataService("../data");
+            // Get the current directory
+            string currentDir = Directory.GetCurrentDirectory();
+            Console.WriteLine($"Current directory: {currentDir}");
 
-            // Create sample data if needed
-            _dataService.CreateSampleData();
+            // Calculate path to build/data relative to current directory
+            string dataPath = Path.GetFullPath(Path.Combine(currentDir, "../../build/data"));
+            Console.WriteLine($"Using data path: {dataPath}");
 
-            // Initialize the TransactionsViewModel
-            _transactionsViewModel = new TransactionsViewModel();
+            try
+            {
+                Console.WriteLine("Trying to initialize NativeDataService...");
+                _nativeDataService = new NativeDataService(dataPath);
+                _dataService = _nativeDataService;
+                Console.WriteLine("Successfully initialized NativeDataService");
+            }
+            catch (Exception ex)
+            {
+                // Log the error and fall back to C# implementation
+                Console.WriteLine($"Failed to initialize NativeDataService: {ex.Message}");
+                Console.WriteLine($"Falling back to C# DataService implementation using the same path: {dataPath}");
+                _nativeDataService = null;
+                _dataService = new DataService(dataPath);
+            }
+
+            // Initialize the TransactionsViewModel with the data service
+            _transactionsViewModel = new TransactionsViewModel(_dataService);
 
             InitializeMonthSelector();
             RefreshDashboard();
         }
+
+        public void Cleanup()
+        {
+            try
+            {
+                if (_nativeDataService != null)
+                {
+                    Console.WriteLine("Cleaning up NativeDataService from MainWindowViewModel");
+                    _nativeDataService.Dispose();
+                    _nativeDataService = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during cleanup: {ex.Message}");
+            }
+        }
+
 
         public TransactionsViewModel TransactionsViewModel
         {

@@ -1,4 +1,4 @@
-# backend/CMakeLists.txt
+
 cmake_minimum_required(VERSION 3.10)
 project(BudgetTrackerBackend)
 
@@ -16,19 +16,35 @@ if(NOT nlohmann_json_FOUND)
     include_directories(/usr/include/nlohmann)
 endif()
 
-# Add source files
-set(SOURCES
+# Common source files (without main.cpp)
+set(COMMON_SOURCES
     src/Transaction.cpp
     src/Category.cpp
     src/Budget.cpp
     src/DataManager.cpp
-    src/main.cpp
 )
 
+# Library-specific source
+set(LIB_SOURCES
+    ${COMMON_SOURCES}
+    src/BudgetTrackerLib.cpp  # This is the new file we'll create
+)
+
+# Add shared library target
+add_library(BudgetTrackerLib SHARED ${LIB_SOURCES})
+target_compile_definitions(BudgetTrackerLib PRIVATE BUDGETTRACKERLIB_EXPORTS)
+
 # Create executable
-add_executable(budget_tracker ${SOURCES})
+add_executable(budget_tracker ${COMMON_SOURCES} src/main.cpp)
 
 # Link against nlohmann_json if found
 if(nlohmann_json_FOUND)
     target_link_libraries(budget_tracker PRIVATE nlohmann_json::nlohmann_json)
+    target_link_libraries(BudgetTrackerLib PRIVATE nlohmann_json::nlohmann_json)
 endif()
+
+# Set library output directory to match where the C# app will look
+set_target_properties(BudgetTrackerLib PROPERTIES 
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"  # For Windows DLL
+)

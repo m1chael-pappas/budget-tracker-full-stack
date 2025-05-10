@@ -218,7 +218,7 @@ namespace BudgetTrackerUI.ViewModels
 
             try
             {
-                var dialog = new TransactionDialog(null, false);
+                var dialog = new TransactionDialog(null, false, _dataService);
                 Console.WriteLine("Created TransactionDialog");
 
                 var result = await dialog.ShowDialog<bool?>(_hostWindow);
@@ -249,7 +249,7 @@ namespace BudgetTrackerUI.ViewModels
 
             try
             {
-                var dialog = new TransactionDialog(_selectedTransaction, true);
+                var dialog = new TransactionDialog(_selectedTransaction, true, _dataService);
                 Console.WriteLine("Created TransactionDialog for editing");
 
                 var result = await dialog.ShowDialog<bool?>(_hostWindow);

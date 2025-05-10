@@ -43,11 +43,11 @@ namespace BudgetTrackerUI.ViewModels
 
         public MainWindowViewModel()
         {
-            // Get the current directory
+
             string currentDir = Directory.GetCurrentDirectory();
             Console.WriteLine($"Current directory: {currentDir}");
 
-            // Calculate path to build/data relative to current directory
+
             string dataPath = Path.GetFullPath(Path.Combine(currentDir, "../../build/data"));
             Console.WriteLine($"Using data path: {dataPath}");
 
@@ -60,14 +60,14 @@ namespace BudgetTrackerUI.ViewModels
             }
             catch (Exception ex)
             {
-                // Log the error and fall back to C# implementation
+
                 Console.WriteLine($"Failed to initialize NativeDataService: {ex.Message}");
                 Console.WriteLine($"Falling back to C# DataService implementation using the same path: {dataPath}");
                 _nativeDataService = null;
                 _dataService = new DataService(dataPath);
             }
 
-            // Initialize the TransactionsViewModel with the data service
+
             _transactionsViewModel = new TransactionsViewModel(_dataService);
 
             InitializeMonthSelector();

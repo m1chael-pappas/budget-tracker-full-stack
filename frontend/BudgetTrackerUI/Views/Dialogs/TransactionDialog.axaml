@@ -36,7 +36,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Text="Amount:" VerticalAlignment="Center"/>
-                <NumericUpDown Grid.Column="1" Value="{Binding Amount, Mode=TwoWay}" Minimum="0.01" Increment="0.01" FormatString="C2"/>
+                <NumericUpDown Grid.Column="1" Value="{Binding Amount, Mode=TwoWay}" Minimum="0.01" Increment="0.01"  FormatString="$ 0.00"/>
             </Grid>
             <!-- Description -->
             <Grid>

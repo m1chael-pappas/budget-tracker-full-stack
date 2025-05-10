@@ -51,7 +51,7 @@
                 <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>
                 <DataGridTextColumn Header="Category" Binding="{Binding CategoryName}" Width="150"/>
                 <DataGridTextColumn Header="Type" Binding="{Binding IsIncome, Converter={StaticResource BoolToTypeConverter}}" Width="100"/>
-                <DataGridTextColumn Header="Amount" Binding="{Binding Amount, StringFormat={}{0:C2}}" Width="120"/>
+                <DataGridTextColumn Header="Amount" Binding="{Binding Amount, StringFormat=$ {0:F2}}" Width="120"/>
             </DataGrid.Columns>
         </DataGrid>
         <!-- Action Buttons -->

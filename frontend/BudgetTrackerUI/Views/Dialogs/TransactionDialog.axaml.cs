@@ -4,6 +4,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using BudgetTrackerUI.Models;
 using BudgetTrackerUI.ViewModels;
+using BudgetTrackerUI.Services;
 using System;
 
 namespace BudgetTrackerUI.Views.Dialogs
@@ -14,14 +15,14 @@ namespace BudgetTrackerUI.Views.Dialogs
 
         public Transaction? Result { get; private set; }
 
-        public TransactionDialog(Transaction? transaction, bool isEdit)
+        public TransactionDialog(Transaction? transaction, bool isEdit, IDataService dataService)
         {
             InitializeComponent();
 
-            _viewModel = new TransactionDialogViewModel(transaction, isEdit);
+            _viewModel = new TransactionDialogViewModel(transaction, isEdit, dataService);
             DataContext = _viewModel;
-        }
 
+        }
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);

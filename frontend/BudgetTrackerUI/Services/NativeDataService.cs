@@ -245,7 +245,7 @@ namespace BudgetTrackerUI.Services
             }
         }
 
-        // Additional methods to satisfy IDataService interface
+
         public Transaction? GetTransactionById(int id)
         {
             var allTransactions = GetAllTransactions();

@@ -11,7 +11,7 @@ namespace BudgetTrackerUI.ViewModels
 {
     public class TransactionDialogViewModel : INotifyPropertyChanged
     {
-        private readonly DataService _dataService;
+        private readonly IDataService _dataService;
         private readonly bool _isEdit;
         private readonly int _transactionId;
 
@@ -40,9 +40,10 @@ namespace BudgetTrackerUI.ViewModels
             return true;
         }
 
-        public TransactionDialogViewModel(Transaction? transaction, bool isEdit)
+        public TransactionDialogViewModel(Transaction? transaction, bool isEdit, IDataService dataService)
         {
-            _dataService = new DataService("../data");
+            // Use the provided data service instead of creating a new one
+            _dataService = dataService;
             _isEdit = isEdit;
 
             // Load categories
@@ -118,7 +119,6 @@ namespace BudgetTrackerUI.ViewModels
             {
                 if (SetField(ref _amount, value))
                 {
-
                     OnPropertyChanged(nameof(CanSave));
                 }
             }
@@ -131,7 +131,6 @@ namespace BudgetTrackerUI.ViewModels
             {
                 if (SetField(ref _description, value))
                 {
-
                     OnPropertyChanged(nameof(CanSave));
                 }
             }
@@ -144,7 +143,6 @@ namespace BudgetTrackerUI.ViewModels
             {
                 if (SetField(ref _selectedCategory, value))
                 {
-
                     OnPropertyChanged(nameof(CanSave));
                 }
             }

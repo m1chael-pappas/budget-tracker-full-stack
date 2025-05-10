@@ -67,7 +67,6 @@ namespace BudgetTrackerUI.ViewModels
                 _dataService = new DataService(dataPath);
             }
 
-
             _transactionsViewModel = new TransactionsViewModel(_dataService);
 
             InitializeMonthSelector();

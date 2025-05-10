@@ -7,15 +7,21 @@ using BudgetTrackerUI.Models;
 
 namespace BudgetTrackerUI.Services
 {
+    /*     
+     * NativeDataService is a wrapper around the native C++ library for budget tracking.
+     * It provides methods to interact with categories and transactions, including adding,
+     * updating, deleting, and retrieving them. The service uses P/Invoke to call functions
+     * from the native library and handles memory management for the native data manager.
+     */
     public class NativeDataService : IDataService, IDisposable
     {
         private IntPtr _dataManager;
         private bool _disposed = false;
-        private bool _ownsDataManager = true; // Flag to indicate if this instance owns the data manager
+        private bool _ownsDataManager = true;
 
-        // DLL imports - with safer string handling
         private const string LibraryPath = "lib/libBudgetTrackerLib.so";
 
+        // DLL imports 
         [DllImport(LibraryPath, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr CreateDataManager([MarshalAs(UnmanagedType.LPStr)] string dataPath);
 

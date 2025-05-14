@@ -5,6 +5,14 @@
 #include "../include/Budget.h"
 #include "../include/DataManager.h"
 
+/**
+ * @brief Main function for testing the budget tracking system.
+ *
+ * This function creates a DataManager instance, adds categories, transactions,
+ * and budgets, and performs various operations to test the functionality of the
+ * system. It also demonstrates the financial analysis capabilities and data
+ * persistence by reloading the data.
+ */
 int main()
 {
     // Create a data manager with a data directory
